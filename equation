@@ -1,0 +1,179 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+//ф-я степени числа 
+int stepen(int a, int b) {
+	int s=1;
+	for (int i = 0; i < b; i++) {
+		s *= a;
+	}
+	return s;
+}
+//ф-я преобразующая символ в цифру
+int preob(char a) {
+	switch (a) {
+	case '0':
+		return 0;
+		break;
+	case '1':
+		return 1;
+		break;
+	case '2':
+		return 2;
+		break;
+	case '3':
+		return 3;
+		break;
+	case '4':
+		return 4;
+		break;
+	case '5':
+		return 5;
+		break;
+	case '6':
+		return 6;
+		break;
+	case '7':
+		return 7;
+		break;
+	case '8':
+		return 8;
+		break;
+	case '9':
+		return 9;
+		break;
+	}
+}
+int main() {
+    system("chcp 1251>nul");
+	//искомая переменная
+	double x;
+	//массивы для коофициентов
+	char A[20], B[20], C[20];
+	for (int i = 0; i < 20; i++) {
+		A[i] = '*';
+	}
+	for (int i = 0; i < 20; i++) {
+		B[i] = '*';
+	}
+	for (int i = 0; i < 20; i++) {
+		C[i] = '*';
+	}
+	//значения коф-тов a, b и с
+	int a = 0, b = 0, c = 0;
+	//с какого символа считывает длину коф-та С
+	int k;
+	//размеры коф-в
+	int n_A = 0, n_B = 0, n_C = 0;
+	//массив для записи урав-я
+	char p[40];
+	bool znak[3]; //true --> '+' false --> '-'
+	cin >> p;
+	//определение знака коф-та A
+	if (p[0] == '-') {
+		znak[0] = false;
+	} 
+	else {
+		znak[0] = true;
+	}
+	//определение размера коф-а A
+	if (znak[0]) {
+		for (int i = 0; p[i] != 'x'; i++) {
+			n_A++;
+			A[i] = p[i];
+		}
+	}
+	else {
+		for (int i = 1; p[i] != 'x'; i++) {
+			n_A++;
+			A[i - 1] = p[i];
+		}
+	}
+	//определение знака коф-та B
+	if (znak[0]) {
+		if (p[n_A + 1] == '-') {
+			znak[1] = false;
+		}
+		else {
+			znak[1] = true;
+		}
+	}
+	else {
+		if (p[n_A + 2] == '-') {
+			znak[1] = false;
+		}
+		else {
+			znak[1] = true;
+		}
+	}
+	//определение размера коф-а B
+	if (znak[0]) {
+		for (int i = n_A + 2; p[i] != '='; i++) {
+			n_B++;
+			B[i - (n_A + 2)] = p[i];
+		}
+	}
+	else {
+		for (int i = n_A + 3; p[i] != '='; i++) {
+			n_B++;
+			B[i - (n_A + 3)] = p[i];
+		}
+	}
+	//определение знака коф-та C
+	if (znak[0]) {
+		if (p[n_A + n_B + 3] == '-') {
+			znak[2] = false;
+		}
+		else {
+			znak[2] = true;
+		}
+	}
+	else {
+		if (p[n_A + n_B + 4] == '-') {
+			znak[2] = false;
+		}
+		else {
+			znak[2] = true;
+		}
+	}
+	//определение длины коф-та С
+	if (znak[0] and znak[2]) {
+		k = n_A + n_B + 3;
+	}
+	else {
+		if (!znak[0] and !znak[2]) {
+			k = n_A + n_B + 5;
+		}
+		else {
+			k = n_A + n_B + 4;
+		}
+	}
+	for (int i = k; p[i] != ';'; i++) {
+		n_C++;
+		C[i - k] = p[i];
+	}
+	//опре-е значения a
+	for (int i = 0; A[i] != '*'; i++) {
+		a += preob(A[i]) * stepen(10, n_A - i - 1);
+	}
+	if (!znak[0]) {
+		a *= -1;
+	}
+	//опре-е значения b
+	for (int i = 0; B[i] != '*'; i++) {
+		b += preob(B[i]) * stepen(10, n_B - i - 1);
+	}
+	if (!znak[1]) {
+		b *= -1;
+	}
+	//опре-е значения c
+	for (int i = 0; C[i] != '*'; i++) {
+		c += preob(C[i]) * stepen(10, n_C - i - 1);
+	}
+	if (!znak[2]) {
+		c *= -1;
+	}
+	x =(double) (c - b) / a;
+	cout << "x = " << x;
+	return 0;
+}
