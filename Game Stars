@@ -1,0 +1,240 @@
+#include <iostream>
+#include <cstdlib>
+#include <windows.h>
+#include <conio.h>
+using namespace std;
+bool game_over;
+const int H = 15, L = 40;
+const int en = 5;
+char map[H][L];
+struct Player {
+	string name;
+	int x;
+	int y;
+	int vector;
+	int time;
+};
+struct Player player {
+	"Nisitka",
+		2 + rand() % (H - 3),
+		2 + rand() % (L - 3),
+		rand() % 4,
+		0
+};
+struct Enemy {
+	int x;
+	int y;
+	int vector;
+	int activity;
+	bool live;
+};
+struct Q {
+	bool live;
+	int time;
+	int x;
+	int y;
+	int vector;
+};
+void Logic(struct Enemy a[en], struct Q b[10]) {
+	for (int i = 0; i < en; i++) {
+		if (player.x == a[i].x and player.y == a[i].y and a[i].live) {
+			game_over = true;
+		}
+	} 
+	if (player.time >= 15) {
+		player.time = 16;
+	}
+	else {
+		player.time++;
+	}
+	for (int i = 0; i < 10; i++) {
+		if (b[i].live) {
+			for (int j = 0; j < en; j++) {
+				if (a[j].x == b[i].x and a[j].y == b[i].y) {
+					a[j].live = false;
+					b[i].live = false;
+				}
+			}
+		}
+	}
+	for (int i = 0; i < 10; i++) {
+		if (b[i].live) {
+			if (b[i].x == H - 1 or b[i].x == 0 or
+				b[i].y == L - 1 or b[i].y == 0
+				) {
+				b[i].live = false;
+			}
+		}
+	}
+}
+void Going_Enemy(struct Enemy a[en]) {
+	for(int i=0; i < en; i++){
+		if (a[i].live) {
+			if (rand() % 300 < a[i].activity) {
+				switch (rand() % 4) {
+				case 0:
+					if (a[i].x > 1) {
+						a[i].x--;
+					}
+					break;
+				case 1:
+					if (a[i].x < H - 2) {
+						a[i].x++;
+					}
+					break;
+				case 2:
+					if (a[i].y > 1) {
+						a[i].y--;
+					}
+					break;
+				case 3:
+					if (a[i].y < L - 2) {
+						a[i].y++;
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+void Input(struct Q a[10]) {
+	if (_kbhit()) {
+		switch (_getch()) {
+		case'w':
+			if (player.x > 1) {
+				player.x--;
+				player.vector = 0;
+			}
+			break;
+		case's':
+			if (player.x < H - 2) {
+				player.x++;
+				player.vector = 2;
+			}
+			break;
+		case'd':
+			if (player.y < L - 2) {
+				player.y++;
+				player.vector = 1;
+			}
+			break;
+		case'a':
+			if (player.y > 1) {
+				player.y--;
+				player.vector = 3;
+			}
+			break;
+		case 'f':
+			if (player.time > 15) {
+				player.time = 0;
+				for (int i = 0; i < 10; i++) {
+					if (!a[i].live) {
+						a[i].live = true;
+						a[i].time = 0;
+						a[i].x = player.x;
+						a[i].y = player.y;
+						a[i].vector = player.vector;
+						break;
+					}
+				}
+			}
+			break;
+		case'l':
+			game_over = true;
+		}
+	}
+}
+void Going_bullets(struct Q a[10]) {
+	for (int i = 0; i < 10; i++) {
+		if(a[i].live){
+			a[i].time++;
+			if (a[i].time % 5 == 0) {
+				switch (a[i].vector) {
+				case 0:
+					a[i].x--;
+					break;
+				case 1:
+					a[i].y++;
+					break;
+				case 2:
+					a[i].x++;
+					break;
+				case 3:
+					a[i].y--;
+					break;
+				}
+			}
+		}
+	}
+}
+void See(char a[H][L]) {
+	system("cls");
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < L; j++) {
+			cout << a[i][j];
+		}
+		cout << endl;
+	}
+}
+void Map() {
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < L; j++) {
+			if (i == 0 or
+				i == H - 1 or
+				j == 0 or
+				j == L - 1
+				) {
+				map[i][j] = '#';
+			}
+			else {
+				map[i][j] = ' ';
+			}
+		}
+	}
+}
+void Map_Player_Bullets(struct Player a, struct Q b[10]) {
+	map[a.x][a.y] = '@';
+	for (int i = 0; i < 10; i++) {
+		if (b[i].live) {
+			map[b[i].x][b[i].y] = '*';
+		}
+	}
+}
+void Map_Enemy(struct Enemy a[en]) {
+	for(int i = 0; i < en; i++){
+		if (a[i].live) {
+			map[a[i].x][a[i].y] = 'o';
+		}
+	}
+}
+int main() {
+	game_over = false;
+
+	struct Enemy enemy[en];
+	for (int i = 0; i < en; i++) {
+		enemy[i].x = 2 + rand() % (H - 3);
+		enemy[i].y = 2 + rand() % (L - 3);
+		enemy[i].vector = rand() % 4;
+		enemy[i].activity = rand() % 100;
+		enemy[i].live = true;
+	}
+
+	struct Q bullets[10];
+	for (int i=0;i<10;i++){
+		bullets[i].live = false;
+	}
+
+	while (!game_over) {
+		Logic(enemy, bullets);
+		Map();
+		Map_Player_Bullets(player, bullets);
+		Going_Enemy(enemy);
+		Going_bullets(bullets);
+		Map_Enemy(enemy);
+		See(map);
+		Input(bullets);
+	}
+	system("cls");
+	cout << "GAME OVER...";
+	return 0;
+  }
